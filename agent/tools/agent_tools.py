@@ -11,18 +11,24 @@ from utils.logger_handler import logger
 from utils.path_tool import get_abs_path
 import os
 
-rag = RagSummarizeService()
-
 user_ids = ["1001", "1002", "1003", "1004", "1005", "1006", "1007", "1008", "1009", "1010",]
 month_arr = ["2025-01", "2025-02", "2025-03", "2025-04", "2025-05", "2025-06",
              "2025-07", "2025-08", "2025-09", "2025-10", "2025-11", "2025-12", ]
 
 external_data = {}
+_rag_service: RagSummarizeService | None = None
+
+
+def get_rag_service() -> RagSummarizeService:
+    global _rag_service
+    if _rag_service is None:
+        _rag_service = RagSummarizeService()
+    return _rag_service
 
 
 @tool(description="从向量存储中检索参考资料")
 def rag_summarize(query: str) -> str:
-    return rag.rag_summarize(query)
+    return get_rag_service().rag_summarize(query)
 
 
 @tool(description="获取指定城市的天气，以消息字符串的形式返回")

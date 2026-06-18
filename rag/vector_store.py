@@ -1,5 +1,5 @@
 import os
-from typing import Iterable
+from typing import Any
 
 from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
@@ -7,7 +7,8 @@ from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from core.retrieval import reciprocal_rank_fusion
-from model.factory import embed_model
+from model.factory import get_embed_model
+from services.exceptions import RetrievalError
 from utils.config_handler import chroma_conf
 from utils.file_handler import get_file_md5_hex, listdir_with_allowed_type, pdf_loader, txt_loader
 from utils.logger_handler import logger
@@ -19,7 +20,7 @@ class VectorStoreService:
         persist_directory = get_abs_path(chroma_conf["persist_directory"])
         self.vector_store = Chroma(
             collection_name=chroma_conf["collection_name"],
-            embedding_function=embed_model,
+            embedding_function=get_embed_model(),
             persist_directory=persist_directory,
         )
 
@@ -33,6 +34,17 @@ class VectorStoreService:
 
     def get_retriever(self):
         return self.vector_store.as_retriever(search_kwargs={"k": chroma_conf["k"]})
+
+    def vector_search(self, query: str) -> list[Document]:
+        try:
+            return self.get_retriever().invoke(query)
+        except Exception as exc:
+            logger.warning("[vector_search] vector retrieval failed for query=%s: %s", query, exc)
+            raise RetrievalError(
+                "Vector retrieval is unavailable.",
+                code="vector_retrieval_unavailable",
+                details=[str(exc)],
+            ) from exc
 
     def get_documents_for_bm25(self) -> list[Document]:
         if self._documents_cache is not None:
@@ -71,25 +83,54 @@ class VectorStoreService:
         retriever.k = chroma_conf["bm25_k"]
         return retriever
 
-    def hybrid_search(self, query: str) -> dict:
-        vector_docs = self.get_retriever().invoke(query)
-        bm25_docs = self.get_bm25_retriever().invoke(query)
-        fused_docs = reciprocal_rank_fusion([vector_docs, bm25_docs], k=chroma_conf["rrf_k"])
-        final_docs = fused_docs[: chroma_conf["k"]]
+    def bm25_search(self, query: str) -> list[Document]:
+        try:
+            return self.get_bm25_retriever().invoke(query)
+        except Exception as exc:
+            logger.exception("[bm25_search] bm25 retrieval failed for query=%s", query)
+            raise RetrievalError(
+                "BM25 retrieval failed.",
+                code="bm25_retrieval_failed",
+                details=[str(exc)],
+            ) from exc
+
+    def safe_hybrid_search(self, query: str) -> dict[str, Any]:
+        vector_docs: list[Document] = []
+        vector_error: str | None = None
+
+        try:
+            vector_docs = self.vector_search(query)
+        except RetrievalError as exc:
+            vector_error = exc.message
+
+        bm25_docs = self.bm25_search(query)
+        if vector_docs:
+            fused_docs = reciprocal_rank_fusion([vector_docs, bm25_docs], k=chroma_conf["rrf_k"])
+            final_docs = fused_docs[: chroma_conf["k"]]
+            mode = "hybrid"
+        else:
+            final_docs = bm25_docs[: chroma_conf["k"]]
+            mode = "bm25-only"
 
         logger.info(
-            "[hybrid_search] query=%s vector_hits=%s bm25_hits=%s final_hits=%s",
+            "[safe_hybrid_search] query=%s mode=%s vector_hits=%s bm25_hits=%s final_hits=%s",
             query,
+            mode,
             len(vector_docs),
             len(bm25_docs),
             len(final_docs),
         )
 
         return {
+            "mode": mode,
             "vector_docs": vector_docs,
             "bm25_docs": bm25_docs,
             "docs": final_docs,
+            "vector_error": vector_error,
         }
+
+    def hybrid_search(self, query: str) -> dict:
+        return self.safe_hybrid_search(query)
 
     def load_document(self):
         """

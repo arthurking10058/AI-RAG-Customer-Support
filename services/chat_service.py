@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from agent.react_agent import ReactAgent
 from core.demo_context import get_demo_context, set_demo_context
 from schemas.chat import ChatHistoryItem
 from services.exceptions import ServiceError
@@ -8,6 +7,12 @@ from services.exceptions import ServiceError
 
 def _history_to_dicts(history: list[ChatHistoryItem]) -> list[dict]:
     return [{"role": item.role, "content": item.content} for item in history]
+
+
+def _build_agent():
+    from agent.react_agent import ReactAgent
+
+    return ReactAgent()
 
 
 def get_demo_context_snapshot() -> dict:
@@ -22,7 +27,7 @@ def run_chat(
     month: str | None = None,
 ) -> dict:
     if not message.strip():
-        raise ServiceError("message 不能为空")
+        raise ServiceError("message cannot be empty", code="empty_message", status_code=400)
 
     set_demo_context(
         user_id=user_id,
@@ -32,7 +37,7 @@ def run_chat(
         report=False,
     )
 
-    agent = ReactAgent()
+    agent = _build_agent()
     return agent.execute(
         message,
         message_history=_history_to_dicts(history or []),
@@ -48,7 +53,7 @@ def run_report(
     history: list[ChatHistoryItem] | None = None,
 ) -> dict:
     if not message.strip():
-        raise ServiceError("message 不能为空")
+        raise ServiceError("message cannot be empty", code="empty_message", status_code=400)
 
     set_demo_context(
         user_id=user_id,
@@ -58,7 +63,7 @@ def run_report(
         report=True,
     )
 
-    agent = ReactAgent()
+    agent = _build_agent()
     return agent.execute(
         message,
         message_history=_history_to_dicts(history or []),

@@ -1,79 +1,94 @@
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
-from schemas import ApiResponse, ChatRequest, ChatResponseData, ReportRequest
-from services import (
-    ServiceError,
-    error_response,
-    get_demo_context_snapshot,
-    run_chat,
-    run_report,
-    success_response,
+from schemas import (
+    ChatRequest,
+    ChatResponseData,
+    DemoContextData,
+    ErrorResponse,
+    HealthData,
+    ReportRequest,
+    SuccessResponse,
 )
+from services import build_success_response, get_demo_context_snapshot, run_chat, run_report
 
 router = APIRouter(tags=["AI-RAG-Customer-Support"])
 
+COMMON_ERROR_RESPONSES = {
+    status.HTTP_400_BAD_REQUEST: {
+        "model": ErrorResponse,
+        "description": "Request validation inside the service layer failed.",
+    },
+    status.HTTP_500_INTERNAL_SERVER_ERROR: {
+        "model": ErrorResponse,
+        "description": "Unexpected internal service error.",
+    },
+}
 
-@router.get("/health", response_model=ApiResponse, summary="健康检查")
-def health() -> ApiResponse:
-    return success_response("ok", {"status": "healthy"})
+
+@router.get(
+    "/health",
+    response_model=SuccessResponse[HealthData],
+    summary="Health check",
+    description="Check whether the FastAPI service is running normally.",
+)
+def health() -> SuccessResponse[HealthData]:
+    return build_success_response("ok", HealthData(status="healthy"))
 
 
-@router.get("/config/demo-context", response_model=ApiResponse, summary="获取默认演示上下文")
-def demo_context() -> ApiResponse:
-    return success_response("ok", get_demo_context_snapshot())
+@router.get(
+    "/config/demo-context",
+    response_model=SuccessResponse[DemoContextData],
+    summary="Get demo context",
+    description="Return the default demo context currently used by the Streamlit and API flows.",
+)
+def demo_context() -> SuccessResponse[DemoContextData]:
+    data = DemoContextData(**get_demo_context_snapshot())
+    return build_success_response("ok", data)
 
 
 @router.post(
     "/chat",
-    response_model=ApiResponse,
-    summary="普通问答接口",
-    description="调用 Agent + 混合检索 RAG 完成普通咨询问答。",
+    response_model=SuccessResponse[ChatResponseData],
+    summary="Chat with Agent + RAG",
+    description="Run the normal Q&A flow through the ReactAgent and hybrid retrieval pipeline.",
+    responses=COMMON_ERROR_RESPONSES,
 )
-def chat(request: ChatRequest) -> ApiResponse:
-    try:
-        result = run_chat(
-            message=request.message,
-            history=request.history,
-            user_id=request.user_id,
-            city=request.city,
-            month=request.month,
-        )
-        data = ChatResponseData(
-            answer=result["final_answer"],
-            reasoning_steps=result["reasoning_steps"],
-            tool_calls=result["tool_calls"],
-        )
-        return success_response("chat completed", data.model_dump())
-    except ServiceError as exc:
-        return error_response(exc.message)
-    except Exception:
-        return error_response("普通问答执行失败，请稍后重试。")
+def chat(request: ChatRequest) -> SuccessResponse[ChatResponseData]:
+    result = run_chat(
+        message=request.message,
+        history=request.history,
+        user_id=request.user_id,
+        city=request.city,
+        month=request.month,
+    )
+    data = ChatResponseData(
+        answer=result["final_answer"],
+        reasoning_steps=result["reasoning_steps"],
+        tool_calls=result["tool_calls"],
+    )
+    return build_success_response("chat completed", data)
 
 
 @router.post(
     "/report",
-    response_model=ApiResponse,
-    summary="报告模式接口",
-    description="生成结构化月度使用报告。",
+    response_model=SuccessResponse[ChatResponseData],
+    summary="Generate monthly report",
+    description="Run the report mode flow and return a structured monthly usage report answer.",
+    responses=COMMON_ERROR_RESPONSES,
 )
-def report(request: ReportRequest) -> ApiResponse:
-    try:
-        result = run_report(
-            message=request.message,
-            user_id=request.user_id,
-            city=request.city,
-            month=request.month,
-            history=request.history,
-        )
-        data = ChatResponseData(
-            answer=result["final_answer"],
-            reasoning_steps=result["reasoning_steps"],
-            tool_calls=result["tool_calls"],
-        )
-        return success_response("report completed", data.model_dump())
-    except ServiceError as exc:
-        return error_response(exc.message)
-    except Exception:
-        return error_response("报告生成失败，请稍后重试。")
+def report(request: ReportRequest) -> SuccessResponse[ChatResponseData]:
+    result = run_report(
+        message=request.message,
+        user_id=request.user_id,
+        city=request.city,
+        month=request.month,
+        history=request.history,
+    )
+    data = ChatResponseData(
+        answer=result["final_answer"],
+        reasoning_steps=result["reasoning_steps"],
+        tool_calls=result["tool_calls"],
+    )
+    return build_success_response("report completed", data)
