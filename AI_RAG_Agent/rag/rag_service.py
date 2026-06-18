@@ -14,9 +14,7 @@ from utils.prompt_loader import load_rag_prompts
 
 
 def print_prompt(prompt):
-    print("="*20)
-    print(prompt.to_string())
-    print("="*20)
+    logger.debug("[rag_summarize] prompt prepared")
     return prompt
 
 

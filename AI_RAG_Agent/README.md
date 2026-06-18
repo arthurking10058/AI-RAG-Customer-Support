@@ -1,10 +1,10 @@
 # 智扫通机器人智能客服 Agent
 
-面向扫地机器人 / 扫拖一体机器人场景的智能客服项目，基于 `LangChain + Agent + 混合检索 RAG + Streamlit` 构建，支持知识问答、外部使用记录查询、动态提示词切换和结构化月度报告生成。
+一个面向扫地机器人 / 扫拖一体机器人场景的智能客服项目，基于 `LangChain + Agent + 混合检索 RAG + Streamlit` 构建，支持知识问答、外部使用记录查询、动态提示词切换和结构化月度报告生成。
 
 ## 项目亮点
 
-- `Agent` 负责决定是否调用工具，而不是固定的“提问-检索-总结”流程。
+- `Agent` 负责判断是否调用工具，而不是固定的“提问-检索-总结”流程。
 - `RAG` 采用 `Chroma + BM25 + RRF` 的轻量混合检索，兼顾语义召回和关键词命中。
 - `Streamlit` 提供稳定可复现的演示页面，支持固定 `user_id / city / month / mode`。
 - 报告模式输出固定 `Markdown` 结构，适合截图展示、讲解和简历表达。
@@ -32,34 +32,36 @@
 - DashScope Embeddings
 - Tongyi Chat Model
 
-## 目录结构
+## 项目截图
 
-```text
-AI_RAG_Agent
-├─ app.py
-├─ agent
-├─ core
-├─ config
-├─ data
-├─ docs
-├─ model
-├─ prompts
-├─ rag
-└─ utils
-```
+### 1. 首页总览
+
+![首页总览](assets/01-home-overview.png)
+
+### 2. 普通知识问答
+
+![普通知识问答](assets/02-normal-rag-answer.png)
+
+### 3. 月度报告模式
+
+![月度报告模式](assets/03-report-mode-answer.png)
+
+### 4. 核心调用链
+
+![核心调用链](assets/04-architecture-flow.png)
 
 ## 核心链路
 
 ### 普通知识问答
 
 ```text
-用户输入 -> Streamlit -> ReactAgent -> Agent 判断是否调用 RAG -> 混合检索 -> 模型总结 -> 页面展示
+用户输入 -> Streamlit -> ReactAgent -> Agent 判断是否调用工具 -> 混合检索 RAG -> 模型总结 -> 页面展示
 ```
 
 ### 月度报告
 
 ```text
-用户输入 -> Streamlit -> ReactAgent -> middleware 切换报告提示词 -> 读取外部记录 -> 生成 Markdown 报告 -> 页面展示
+用户输入 -> Streamlit -> ReactAgent -> 切换报告 Prompt -> 查询外部记录 -> 生成 Markdown 报告 -> 页面展示
 ```
 
 ## 运行方式
@@ -82,15 +84,6 @@ python -m streamlit run app.py
 - `给我生成这个月的使用报告`
 - `结合本月表现，给我一些保养建议`
 
-## 截图建议
-
-建议补 4 张图：
-
-1. 首页总览
-2. 普通知识问答
-3. 月度报告结果
-4. 项目结构或调用链
-
 ## 简历亮点
 
 - 基于 `LangChain + Agent + RAG` 构建扫地机器人智能客服系统，支持知识问答、外部数据查询、动态提示词切换和结构化月度报告生成。
@@ -100,7 +93,7 @@ python -m streamlit run app.py
 ## 后续可选
 
 - 轻量补一个 `FastAPI` 接口层
-- 增加更多截图和演示视频
 - 补充基础测试
 - 增强会话存储和历史管理
+- 继续完善演示视频与项目讲解稿
 

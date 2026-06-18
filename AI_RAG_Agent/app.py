@@ -1,9 +1,13 @@
-import time
+import importlib
 
 import streamlit as st
 
-from agent.react_agent import ReactAgent
+from agent import react_agent as react_agent_module
 from core.demo_context import DEFAULT_DEMO_CONTEXT, set_demo_context
+
+# Streamlit 重新运行脚本时会复用已导入模块，这里强制重载，避免拿到旧版 ReactAgent
+react_agent_module = importlib.reload(react_agent_module)
+ReactAgent = react_agent_module.ReactAgent
 
 # 标题
 st.set_page_config(page_title="智扫通机器人智能客服", page_icon="🤖", layout="wide")
@@ -48,9 +52,6 @@ st.markdown(
 
 st.caption("面向扫地机器人 / 扫拖一体机器人场景，支持知识问答、外部数据查询和月度报告生成。")
 st.divider()
-
-if "agent" not in st.session_state:
-    st.session_state["agent"] = ReactAgent()
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
@@ -142,7 +143,21 @@ with col3:
 st.write("")
 
 for message in st.session_state["messages"]:
-    st.chat_message(message["role"]).write(message["content"])
+    role = message["role"]
+    if role == "assistant":
+        with st.chat_message("assistant"):
+            st.markdown(message.get("content", ""))
+            reasoning_trace = message.get("reasoning_trace") or []
+            if reasoning_trace:
+                with st.expander("查看思考过程", expanded=False):
+                    for item in reasoning_trace:
+                        if item.get("type") == "reasoning":
+                            st.markdown(item.get("content", ""))
+                        elif item.get("type") == "tool_call":
+                            st.markdown(item.get("content", ""))
+        continue
+
+    st.chat_message(role).write(message["content"])
 
 # 用户输入提示词
 prompt = st.chat_input()
@@ -151,24 +166,39 @@ if prompt:
     st.chat_message("user").write(prompt)
     st.session_state["messages"].append({"role": "user", "content": prompt})
 
-    response_messages = []
     with st.spinner("智能客服思考中..."):
-        res_stream = st.session_state["agent"].execute_stream(
-            prompt,
-            message_history=st.session_state["messages"][:-1],
-            mode=st.session_state["demo_context"]["mode"],
+        agent = ReactAgent()
+        if not hasattr(agent, "execute"):
+            result = {
+                "final_answer": "当前页面加载到了旧版 Agent 实例，请重启 Streamlit 后重试。",
+                "reasoning_steps": [],
+                "tool_calls": [],
+                "reasoning_trace": [],
+            }
+        else:
+            result = agent.execute(
+                prompt,
+                message_history=st.session_state["messages"][:-1],
+                mode=st.session_state["demo_context"]["mode"],
+            )
+
+        with st.chat_message("assistant"):
+            st.markdown(result["final_answer"])
+            if result["reasoning_trace"]:
+                with st.expander("查看思考过程", expanded=False):
+                    for item in result["reasoning_trace"]:
+                        if item["type"] == "reasoning":
+                            st.markdown(item["content"])
+                        elif item["type"] == "tool_call":
+                            st.markdown(item["content"])
+
+        st.session_state["messages"].append(
+            {
+                "role": "assistant",
+                "content": result["final_answer"],
+                "reasoning_steps": result["reasoning_steps"],
+                "tool_calls": result["tool_calls"],
+                "reasoning_trace": result["reasoning_trace"],
+            }
         )
-
-        def capture(generator, cache_list):
-
-            for chunk in generator:
-                cache_list.append(chunk)
-
-                for char in chunk:
-                    time.sleep(0.01)
-                    yield char
-
-        final_response = st.chat_message("assistant").write_stream(capture(res_stream, response_messages))
-        assistant_content = final_response or "".join(response_messages).strip()
-        st.session_state["messages"].append({"role": "assistant", "content": assistant_content})
         st.rerun()
