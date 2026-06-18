@@ -1,0 +1,10 @@
+streamlit
+langchain
+langgraph
+langchain-community
+langchain-chroma
+langchain-text-splitters
+chromadb
+rank-bm25
+pypdf
+pyyaml
