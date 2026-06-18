@@ -1,113 +1,218 @@
 # AI-RAG-Customer-Support
 
-一个面向扫地机器人 / 扫拖一体机器人场景的智能客服项目仓库。
+An intelligent customer-support demo project for robot vacuum and vacuum-mop scenarios, built around `Agent + RAG + FastAPI + Streamlit`.
 
-## 项目简介
+## Project Overview
 
-基于 `LangChain Agent + 混合检索 RAG + Streamlit` 构建，支持知识问答、外部使用记录查询、动态提示词切换和结构化月度报告生成。
+This project started from a course-style `LangChain Agent + RAG` demo and was gradually refined into a more complete AI backend showcase.
 
-## 核心能力
+It currently supports:
 
-- `Agent` 工具调度
-- `Chroma + BM25 + RRF` 混合检索
-- `Streamlit` 演示页面
-- 结构化月度报告生成
+- knowledge-based Q&A
+- monthly report generation
+- hybrid retrieval with `Chroma + BM25 + RRF`
+- a lightweight `FastAPI` service layer
+- a `Streamlit` demo interface
+- retrieval comparison and fallback validation
 
-## 项目截图
+## Core Capabilities
 
-### 首页总览
+- `Agent` orchestration for tool selection and multi-step reasoning
+- `Chroma + BM25 + RRF` hybrid retrieval
+- `FastAPI` API layer with unified response models and exception handling
+- `Streamlit` demo UI for interactive showcase
+- structured report mode output
+- `BM25-only fallback` when vector embedding retrieval is unavailable
 
-![首页总览](assets/01-home-overview.png)
+## Project Screenshots
 
-### 普通知识问答
+### Home Overview
 
-![普通知识问答](assets/02-normal-rag-answer.png)
+![Home Overview](assets/01-home-overview.png)
 
-### 月度报告模式
+### Normal RAG Answer
 
-![月度报告模式](assets/03-report-mode-answer.png)
+![Normal RAG Answer](assets/02-normal-rag-answer.png)
 
-### 核心调用链
+### Report Mode
 
-![核心调用链](assets/04-architecture-flow.png)
+![Report Mode](assets/03-report-mode-answer.png)
 
-## 仓库结构
+### Core Flow
+
+![Core Flow](assets/04-architecture-flow.png)
+
+## Repository Structure
 
 ```text
 AI-RAG-Customer-Support
-├─ app.py
-├─ agent/
-├─ assets/
-├─ config/
-├─ core/
-├─ data/
-├─ model/
-├─ prompts/
-├─ rag/
-├─ utils/
-└─ requirements.txt
+├── app.py
+├── main.py
+├── agent/
+├── api/
+├── assets/
+├── config/
+├── core/
+├── data/
+├── model/
+├── prompts/
+├── rag/
+├── schemas/
+├── services/
+├── tests/
+├── utils/
+└── requirements.txt
 ```
 
-## 核心链路
+## Core Flows
 
-### 普通知识问答
+### Normal Knowledge Q&A
 
 ```text
-用户输入 -> Streamlit -> ReactAgent -> Agent 判断是否调用工具 -> 混合检索 RAG -> 模型总结 -> 页面展示
+User Input
+  -> Streamlit / FastAPI
+  -> ReactAgent
+  -> Tool selection
+  -> Hybrid RAG retrieval
+  -> LLM summarization
+  -> Final answer
 ```
 
-### 月度报告
+### Monthly Report
 
 ```text
-用户输入 -> Streamlit -> ReactAgent -> 切换报告 Prompt -> 查询外部记录 -> 生成 Markdown 报告 -> 页面展示
+User Input
+  -> Streamlit / FastAPI
+  -> ReactAgent
+  -> Report-mode prompt switch
+  -> External usage record lookup
+  -> Structured report generation
+  -> Final answer
 ```
 
-## 运行方式
+### Retrieval Fallback
 
-### 1. 构建知识库
+```text
+Query
+  -> Vector retrieval
+  -> if vector retrieval unavailable:
+       fallback to BM25-only retrieval
+  -> return retrievable context instead of failing hard
+```
+
+## FastAPI Service
+
+The project now includes a lightweight FastAPI layer as the second-stage backend upgrade.
+
+Current endpoints:
+
+- `GET /health`
+- `GET /config/demo-context`
+- `POST /chat`
+- `POST /report`
+
+Current backend improvements:
+
+- clearer request/response schemas
+- unified success/error response structure
+- centralized exception handling
+- route-level test coverage
+- service-layer validation for common bad inputs
+
+After startup you can access:
+
+- Swagger docs: `http://127.0.0.1:8000/docs`
+- Health check: `http://127.0.0.1:8000/health`
+
+## Retrieval Comparison And Fallback
+
+To validate retrieval behavior, the project includes a lightweight comparison script:
+
+```powershell
+python -m rag.compare_retrieval
+```
+
+What it does:
+
+- compares `vector-only` and `hybrid` retrieval behavior
+- records structured output to `outputs/retrieval_comparison.json`
+- automatically falls back to `BM25-only` when vector embedding service is unavailable
+
+Why this matters:
+
+- the project is not only implementing retrieval strategies
+- it is also starting to handle real engineering constraints such as dependency failure and degraded environments
+
+In the current terminal environment, the comparison result shows that:
+
+- all 6 evaluation queries completed
+- all 6 were handled via `BM25-only fallback`
+- no request crashed completely
+
+This means the current result mainly proves the usefulness of the fallback path, rather than proving that hybrid retrieval is already superior to vector-only retrieval in every environment.
+
+## How To Run
+
+### 1. Build The Knowledge Base
 
 ```powershell
 python -m rag.vector_store
 ```
 
-### 2. 启动 Streamlit 演示页
+### 2. Start The Streamlit Demo
 
 ```powershell
 python -m streamlit run app.py
 ```
 
-### 3. 启动 FastAPI 服务
+### 3. Start The FastAPI Service
 
 ```powershell
 uvicorn main:app --reload
 ```
 
-启动后可访问：
+### 4. Run Tests
 
-- Swagger 文档：`http://127.0.0.1:8000/docs`
-- 健康检查：`http://127.0.0.1:8000/health`
+```powershell
+pytest tests -q
+```
 
-## 推荐演示问题
+## Recommended Demo Questions
 
-### 普通咨询
+### Normal Q&A
 
-- `深圳最近比较潮湿，扫拖一体机器人要怎么保养？`
-- `小户型适合什么类型的扫地机器人？`
+- `深圳最近比较潮湿，扫拖一体机器人怎么做维护保养？`
+- `小户型更适合什么类型的扫地机器人？`
+- `扫地机器人出现迷路或者反复打转时怎么排查？`
 
-### 月度报告
+### Report Mode
 
 - `给我生成这个月的使用报告`
 - `结合本月表现，给我一些保养建议`
 
-## 简历亮点
+## Resume-Friendly Highlights
 
-- 基于 `LangChain + Agent + RAG` 构建扫地机器人智能客服系统，支持知识问答、外部数据查询、动态提示词切换和结构化月度报告生成。
-- 基于 `Chroma + BM25 + RRF` 实现轻量混合检索，兼顾语义召回与关键词匹配，提升问答稳定性。
-- 使用 `Streamlit` 搭建可复现演示页面，支持多轮对话、固定上下文和报告模式切换，便于项目展示和功能验证。
+- Built an intelligent customer-support project based on `LangChain + Agent + RAG`, supporting knowledge Q&A, external usage-record lookup, prompt switching, and structured monthly report generation.
+- Implemented lightweight hybrid retrieval with `Chroma + BM25 + RRF`, balancing semantic recall and keyword matching.
+- Added a lightweight `FastAPI` backend layer with request/response schemas, unified error handling, and basic automated tests.
+- Added a retrieval comparison script and `BM25-only fallback`, improving system robustness when vector embedding service is unavailable.
+- Kept `Streamlit` as the demo entry while exposing backend capabilities through API routes for a more complete AI service showcase.
 
-## 后续可选
+## Current Progress
 
-- 继续完善 FastAPI 接口层
-- 补充基础测试
-- 增强会话存储和历史管理
-- 继续完善演示视频与项目讲解稿
+Already completed:
+
+- Streamlit demo stabilization
+- GitHub showcase cleanup
+- lightweight FastAPI second-stage backendization
+- response models and exception handling
+- retrieval comparison script
+- BM25 fallback for restricted environments
+- basic test skeleton and route/service coverage
+
+## Next Steps
+
+- improve README/API usage examples further
+- add more fixed evaluation queries and manual comparison notes
+- strengthen RAG quality validation
+- extend backend testing and failure-case coverage
