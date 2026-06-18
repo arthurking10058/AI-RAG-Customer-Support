@@ -55,6 +55,22 @@ def test_rag_summarize_returns_friendly_message_when_no_docs(monkeypatch):
     assert "未检索到相关知识资料" in result
 
 
+def test_rag_summarize_returns_friendly_message_when_retrieval_temporarily_unavailable(monkeypatch):
+    service = RagSummarizeService.__new__(RagSummarizeService)
+
+    monkeypatch.setattr(
+        service,
+        "retrieve_context",
+        lambda query: (_ for _ in ()).throw(
+            RetrievalError("Vector retrieval is unavailable.", code="vector_retrieval_unavailable", status_code=503)
+        ),
+    )
+
+    result = service.rag_summarize("query")
+
+    assert "当前知识检索服务暂时不可用" in result
+
+
 def test_rag_summarize_raises_when_generation_fails(monkeypatch):
     service = RagSummarizeService.__new__(RagSummarizeService)
 
