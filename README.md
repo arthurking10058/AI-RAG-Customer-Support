@@ -64,10 +64,28 @@ AI-RAG-Customer-Support
 
 ## 运行方式
 
+### 1. 构建知识库
+
 ```powershell
 python -m rag.vector_store
+```
+
+### 2. 启动 Streamlit 演示页
+
+```powershell
 python -m streamlit run app.py
 ```
+
+### 3. 启动 FastAPI 服务
+
+```powershell
+uvicorn main:app --reload
+```
+
+启动后可访问：
+
+- Swagger 文档：`http://127.0.0.1:8000/docs`
+- 健康检查：`http://127.0.0.1:8000/health`
 
 ## 推荐演示问题
 
@@ -89,7 +107,7 @@ python -m streamlit run app.py
 
 ## 后续可选
 
-- 轻量补一个 `FastAPI` 接口层
+- 继续完善 FastAPI 接口层
 - 补充基础测试
 - 增强会话存储和历史管理
 - 继续完善演示视频与项目讲解稿
