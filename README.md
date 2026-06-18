@@ -151,6 +151,26 @@ In the current terminal environment, the comparison result shows that:
 
 This means the current result mainly proves the usefulness of the fallback path, rather than proving that hybrid retrieval is already superior to vector-only retrieval in every environment.
 
+## Stability And Error Handling
+
+The project now includes a more explicit stability layer for both the API and RAG service:
+
+- unified `ServiceError` / `RetrievalError` handling in FastAPI
+- `503` responses for retrieval-side failures
+- `500` responses for unexpected internal errors
+- friendly fallback messages when retrieval context is unavailable
+- automatic `BM25-only` degradation when vector retrieval cannot be used
+
+Current automated coverage includes:
+
+- route-level validation and exception response tests
+- RAG fallback behavior tests
+- retrieval degradation tests for vector failure scenarios
+
+At the moment, the test suite passes with:
+
+- `23 passed`
+
 ## How To Run
 
 ### 1. Build The Knowledge Base
