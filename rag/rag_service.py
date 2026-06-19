@@ -62,6 +62,7 @@ class RagSummarizeService(object):
 
         context_docs = retrieval_result["docs"]
         retrieval_mode = retrieval_result.get("mode", "hybrid")
+        retrieval_query = retrieval_result.get("retrieval_query", query)
 
         context = ""
         for counter, doc in enumerate(context_docs, start=1):
@@ -75,6 +76,7 @@ class RagSummarizeService(object):
             answer = self.chain.invoke(
                 {
                     "input": query,
+                    "retrieval_query": retrieval_query,
                     "context": context,
                 }
             ).strip()

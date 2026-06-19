@@ -19,10 +19,60 @@ COMMON_ERROR_RESPONSES = {
     status.HTTP_400_BAD_REQUEST: {
         "model": ErrorResponse,
         "description": "Request validation inside the service layer failed.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": False,
+                    "message": "message cannot be empty",
+                    "error": {"code": "empty_message", "details": []},
+                }
+            }
+        },
+    },
+    status.HTTP_422_UNPROCESSABLE_ENTITY: {
+        "model": ErrorResponse,
+        "description": "Request body validation failed before entering the service layer.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": False,
+                    "message": "Request validation failed.",
+                    "error": {
+                        "code": "validation_error",
+                        "details": ["{'type': 'missing', 'loc': ('body', 'user_id'), 'msg': 'Field required'}"],
+                    },
+                }
+            }
+        },
+    },
+    status.HTTP_503_SERVICE_UNAVAILABLE: {
+        "model": ErrorResponse,
+        "description": "Retrieval-side dependency is temporarily unavailable.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": False,
+                    "message": "Vector retrieval is unavailable.",
+                    "error": {
+                        "code": "vector_retrieval_unavailable",
+                        "details": ["embedding service offline"],
+                    },
+                }
+            }
+        },
     },
     status.HTTP_500_INTERNAL_SERVER_ERROR: {
         "model": ErrorResponse,
         "description": "Unexpected internal service error.",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": False,
+                    "message": "Internal server error.",
+                    "error": {"code": "internal_error", "details": []},
+                }
+            }
+        },
     },
 }
 

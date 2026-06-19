@@ -44,7 +44,7 @@ st.markdown(
     """
     <div class="hero-card">
         <h1>智扫通机器人智能客服</h1>
-        <p>Agent + 混合检索 RAG + 动态提示词切换的可复现演示项目</p>
+        <p>Agent + 混合检索 RAG + 动态提示词切换</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -134,7 +134,7 @@ with col3:
         """
         <div class="soft-panel">
             <strong>报告模式</strong><br>
-            输出结构化 Markdown，适合演示与简历展示。
+            输出结构化 Markdown，适合演示。
         </div>
         """,
         unsafe_allow_html=True,

@@ -1,0 +1,242 @@
+[
+  {
+    "id": "maintenance_01",
+    "query": "深圳最近比较潮湿，扫拖一体机器人怎么做维护保养？",
+    "category": "维护保养",
+    "expected_focus": "应该提到潮湿环境下的拖布、尘盒、水箱和机器通风维护。",
+    "manual_checkpoints": [
+      "是否贴合潮湿场景",
+      "是否覆盖拖布/水箱清洁",
+      "来源是否来自维护保养知识"
+    ]
+  },
+  {
+    "id": "maintenance_02",
+    "query": "拖布异味和水箱清洁一般怎么处理？",
+    "category": "维护保养",
+    "expected_focus": "应该包含拖布清洗晾干、水箱换水和定期清洁建议。",
+    "manual_checkpoints": [
+      "是否给出可执行步骤",
+      "是否提到异味根因",
+      "来源是否可信"
+    ]
+  },
+  {
+    "id": "maintenance_03",
+    "query": "扫地机器人滤网多久清理一次比较合适？",
+    "category": "维护保养",
+    "expected_focus": "应回答滤网清洁频率，并提醒根据使用强度调整。",
+    "manual_checkpoints": [
+      "是否回答频率",
+      "是否有按使用场景调整",
+      "是否需要补知识库"
+    ]
+  },
+  {
+    "id": "troubleshooting_01",
+    "query": "扫地机器人出现迷路或者反复打转时怎么排查？",
+    "category": "故障排查",
+    "subcategory": "troubleshooting_navigation",
+    "expected_focus": "应提到传感器、地图、障碍物和重启重建地图等排查点。",
+    "manual_checkpoints": [
+      "是否覆盖核心排查步骤",
+      "是否按先易后难组织",
+      "来源是否贴题"
+    ]
+  },
+  {
+    "id": "troubleshooting_02",
+    "query": "扫地机器人吸力明显变弱，一般先检查什么？",
+    "category": "故障排查",
+    "subcategory": "troubleshooting_suction",
+    "expected_focus": "应提到尘盒、滤网、滚刷堵塞和吸入口清理。",
+    "manual_checkpoints": [
+      "是否先给出高频原因",
+      "是否包含清洁部件",
+      "是否需要补知识库"
+    ]
+  },
+  {
+    "id": "troubleshooting_03",
+    "query": "机器频繁提示悬崖传感器异常，可能是什么原因？",
+    "category": "故障排查",
+    "subcategory": "troubleshooting_navigation",
+    "expected_focus": "应提到传感器脏污、地面反光或环境影响。",
+    "manual_checkpoints": [
+      "是否说明异常原因",
+      "是否有环境因素",
+      "来源是否合理"
+    ]
+  },
+  {
+    "id": "troubleshooting_navigation_04",
+    "query": "机器人建图总是错乱，重新建图前我应该先检查什么？",
+    "category": "故障排查",
+    "subcategory": "troubleshooting_navigation",
+    "expected_focus": "应提到反光环境、传感器灰尘、移动障碍物和删除旧地图重建。",
+    "manual_checkpoints": [
+      "是否命中导航建图场景",
+      "是否包含重建地图建议",
+      "来源是否集中在故障排除知识"
+    ]
+  },
+  {
+    "id": "troubleshooting_suction_05",
+    "query": "机器人最近吸尘效果差很多，风道和滤网应该怎么检查？",
+    "category": "故障排查",
+    "subcategory": "troubleshooting_suction",
+    "expected_focus": "应提到尘盒、滤网、风道、吸口和刷组堵塞检查。",
+    "manual_checkpoints": [
+      "是否覆盖风道/滤网",
+      "是否优先高频部件",
+      "来源是否贴合吸力问题"
+    ]
+  },
+  {
+    "id": "troubleshooting_mopping_01",
+    "query": "拖地时突然不出水了，应该优先排查哪些地方？",
+    "category": "故障排查",
+    "subcategory": "troubleshooting_mopping",
+    "expected_focus": "应提到水箱、出水口、出水管、出水量设置和堵塞问题。",
+    "manual_checkpoints": [
+      "是否命中拖地水箱场景",
+      "是否覆盖出水链路",
+      "来源是否合理"
+    ]
+  },
+  {
+    "id": "troubleshooting_mopping_02",
+    "query": "机器人拖地时漏水，水箱和密封圈一般怎么检查？",
+    "category": "故障排查",
+    "subcategory": "troubleshooting_mopping",
+    "expected_focus": "应提到水箱盖、密封圈、出水阀和机身接口检查。",
+    "manual_checkpoints": [
+      "是否覆盖密封圈/水箱",
+      "是否给出检查顺序",
+      "来源是否集中在拖地故障知识"
+    ]
+  },
+  {
+    "id": "troubleshooting_power_01",
+    "query": "机器人最近充不进电，充电触点和电池应该怎么排查？",
+    "category": "故障排查",
+    "subcategory": "troubleshooting_power",
+    "expected_focus": "应提到充电触点、适配器、电池状态和充电座供电检查。",
+    "manual_checkpoints": [
+      "是否命中充电电池场景",
+      "是否包含触点/电池检查",
+      "来源是否贴题"
+    ]
+  },
+  {
+    "id": "troubleshooting_power_02",
+    "query": "续航突然掉得很厉害，一般先判断是电池老化还是参数设置问题？",
+    "category": "故障排查",
+    "subcategory": "troubleshooting_power",
+    "expected_focus": "应提到吸力档位、出水量、电池老化和回充频率等因素。",
+    "manual_checkpoints": [
+      "是否区分参数问题和电池问题",
+      "是否有判断顺序",
+      "来源是否合理"
+    ]
+  },
+  {
+    "id": "buying_01",
+    "query": "小户型更适合什么类型的扫地机器人？",
+    "category": "选购建议",
+    "expected_focus": "应提到机身尺寸、避障、集尘方式和性价比取舍。",
+    "manual_checkpoints": [
+      "是否真正面向小户型",
+      "是否包含功能取舍",
+      "答案是否具体"
+    ]
+  },
+  {
+    "id": "buying_02",
+    "query": "有宠物毛发的家庭选购扫地机器人要注意什么？",
+    "category": "选购建议",
+    "expected_focus": "应提到防缠绕、吸力、尘盒容量和毛发清理能力。",
+    "manual_checkpoints": [
+      "是否覆盖宠物毛发核心痛点",
+      "是否提到防缠绕",
+      "来源是否可信"
+    ]
+  },
+  {
+    "id": "buying_03",
+    "query": "预算有限时，扫拖一体和单扫地机器人应该怎么选？",
+    "category": "选购建议",
+    "expected_focus": "应对比预算、清洁诉求和维护成本。",
+    "manual_checkpoints": [
+      "是否有对比逻辑",
+      "是否回答预算约束",
+      "是否需要补知识库"
+    ]
+  },
+  {
+    "id": "environment_01",
+    "query": "地毯较多的家庭应该关注哪些功能？",
+    "category": "环境适配",
+    "expected_focus": "应提到地毯识别、自动增压、越障和拖地避让。",
+    "manual_checkpoints": [
+      "是否命中地毯场景",
+      "是否提到增压或避让",
+      "答案是否完整"
+    ]
+  },
+  {
+    "id": "environment_02",
+    "query": "家里门槛比较多，选扫地机器人时重点看什么？",
+    "category": "环境适配",
+    "expected_focus": "应提到越障高度、底盘设计和地图连续性。",
+    "manual_checkpoints": [
+      "是否关注门槛场景",
+      "是否给出关键指标",
+      "来源是否贴题"
+    ]
+  },
+  {
+    "id": "environment_03",
+    "query": "采光强、地面反光多的房间，会影响扫地机器人吗？",
+    "category": "环境适配",
+    "expected_focus": "应提到反光对传感器或识别的影响，以及规避建议。",
+    "manual_checkpoints": [
+      "是否解释影响原因",
+      "是否给出规避建议",
+      "是否需要补知识库"
+    ]
+  },
+  {
+    "id": "report_01",
+    "query": "给我生成这个月的使用报告",
+    "category": "报告型问题",
+    "expected_focus": "应能够触发报告模式，围绕本月使用情况生成结构化总结。",
+    "manual_checkpoints": [
+      "是否适合报告模式",
+      "是否和月度数据相关",
+      "输出是否清晰"
+    ]
+  },
+  {
+    "id": "report_02",
+    "query": "结合本月表现，给我一些保养建议",
+    "category": "报告型问题",
+    "expected_focus": "应结合月度使用情况输出针对性的保养建议。",
+    "manual_checkpoints": [
+      "是否结合月度上下文",
+      "建议是否具体",
+      "来源是否合理"
+    ]
+  },
+  {
+    "id": "report_03",
+    "query": "如果本月清扫次数明显下降，我该怎么理解这份报告？",
+    "category": "报告型问题",
+    "expected_focus": "应解释指标变化，并给出合理原因或进一步观察建议。",
+    "manual_checkpoints": [
+      "是否解释指标变化",
+      "是否给出合理原因",
+      "答案是否具备分析感"
+    ]
+  }
+]
