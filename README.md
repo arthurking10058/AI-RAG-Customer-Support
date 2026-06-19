@@ -4,7 +4,7 @@ An intelligent customer-support demo project for robot vacuum and vacuum-mop sce
 
 ## Project Overview
 
-This project started from a course-style `LangChain Agent + RAG` demo and was gradually refined into a more complete AI backend showcase.
+This project started from a course-style `LangChain Agent + RAG` demo and was gradually refined into a more complete AI customer-support backend project.
 
 The current version is mainly centered around four engineering points:
 
@@ -358,4 +358,4 @@ If API responses look garbled in Windows PowerShell 5.1, verify the service is r
 - improve retrieval evaluation coverage
 - add stronger reranking / classification experiments when needed
 - improve deployment and environment documentation
-- reopen retrieval optimization only if stronger reranking/classification capability or a stable vector environment becomes available
+- revisit retrieval optimization with stronger reranking/classification support or a more stable vector environment
