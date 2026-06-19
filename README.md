@@ -181,7 +181,7 @@ Each entry now carries:
 - expected answer focus
 - manual review checkpoints
 
-This makes it easier to move the retrieval comparison from "there is a script" to "there is a reusable evaluation set plus human review notes".
+This makes it easier to move the retrieval comparison from "there is a script" to "there is a reusable evaluation set with clearer review structure".
 
 What the latest run tells us:
 
@@ -194,7 +194,7 @@ What the latest run tells us:
 
 The current retrieval conclusion is therefore intentionally conservative:
 
-- this version is acceptable for showcase, explanation, and delivery
+- most query categories already return to the correct knowledge domain
 - the remaining gap is mainly ranking quality on a few weak samples
 - it is no longer worth spending disproportionate time on single-query tuning unless a stronger reranker, classifier, or rule layer is introduced
 
@@ -332,13 +332,12 @@ pytest tests -q --basetemp .pytest_tmp
 - `给我生成这个月的使用报告`
 - `结合本月表现，给我一些保养建议`
 
-## Resume-Friendly Highlights
+## Implementation Notes
 
-- Built an intelligent customer-support project based on `LangChain Agent + hybrid RAG + FastAPI`, supporting knowledge Q&A, structured monthly reports, and API-based service access.
-- Added a lightweight `FastAPI` backend layer with request/response schemas, unified error handling, API examples, and automated failure-path tests.
-- Added a fixed-query retrieval evaluation set with manual review checkpoints to make retrieval tuning more verifiable.
-- Added `BM25-only fallback` so the system can still return structured retrieval results when vector embedding service is unavailable.
-- Kept `Streamlit` as the demo entry while exposing backend capabilities through API routes for a more complete AI backend showcase.
+- The project combines `LangChain Agent`, hybrid retrieval, `FastAPI`, and `Streamlit` in a single customer-support demo workflow.
+- The retrieval layer uses `Chroma + BM25 + RRF`, and the evaluation layer adds a fixed-query sample set with manual review checkpoints.
+- The backend layer includes unified response models, explicit failure-path handling, and `BM25-only fallback` when vector retrieval is unavailable.
+- `Streamlit` remains the interactive demo entry, while `FastAPI` exposes the same capabilities through documented API routes.
 
 ## Troubleshooting
 
@@ -353,29 +352,6 @@ pytest tests -q --basetemp .pytest_tmp
 ### Chinese response text looks garbled in Windows PowerShell 5.1
 
 If API responses look garbled in Windows PowerShell 5.1, verify the service is returning `application/json; charset=utf-8`, or use Swagger / Python / Postman for response validation instead of relying on legacy console decoding.
-
-## Interview Framing
-
-If you need a short way to explain why this project is more than a demo, the current version can be framed like this:
-
-> This is not only an `Agent + RAG` demo. I also added a lightweight FastAPI backend, fixed-query retrieval evaluation samples, manual review checkpoints, API examples, and a BM25-only fallback path so the system can still return structured results in restricted environments.
-
-What I would say more carefully about the latest retrieval validation:
-
-> The current run mainly proves that the fallback path works reliably in a restricted environment. It also shows that most query categories can now return to the correct knowledge domain, while a few weak samples still have non-optimal ranking. It does not yet serve as the final proof that hybrid retrieval is always better than vector-only retrieval.
-
-## Current Progress
-
-Already completed:
-
-- Streamlit demo stabilization
-- GitHub showcase cleanup
-- lightweight FastAPI second-stage backendization
-- response models and exception handling
-- retrieval comparison script
-- fixed-query evaluation set and manual review notes
-- BM25 fallback for restricted environments
-- basic test skeleton and route/service coverage
 
 ## Next Steps
 

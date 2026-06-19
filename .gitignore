@@ -16,3 +16,4 @@
 *.pyc
 md5.text
 /outputs/
+/.pytest_tmp/
