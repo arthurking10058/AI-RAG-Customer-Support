@@ -6,6 +6,13 @@ An intelligent customer-support demo project for robot vacuum and vacuum-mop sce
 
 This project started from a course-style `LangChain Agent + RAG` demo and was gradually refined into a more complete AI backend showcase.
 
+The current version is mainly centered around four engineering points:
+
+- a lightweight `FastAPI` backend layer
+- a fixed-query retrieval evaluation set
+- `BM25-only fallback` in restricted environments
+- clearer failure-path handling and automated tests
+
 It currently supports:
 
 - knowledge-based Q&A
@@ -19,12 +26,13 @@ It currently supports:
 ## Core Capabilities
 
 - `Agent` orchestration for tool selection and multi-step reasoning
-- `Chroma + BM25 + RRF` hybrid retrieval
 - `FastAPI` API layer with unified response models and exception handling
 - fixed-query retrieval evaluation samples with manual review checkpoints
-- `Streamlit` demo UI for interactive showcase
-- structured report mode output
 - `BM25-only fallback` when vector embedding retrieval is unavailable
+- route-level failure-path handling and automated validation coverage
+- `Chroma + BM25 + RRF` hybrid retrieval
+- structured report mode output
+- `Streamlit` demo UI for interactive showcase
 
 ## Project Screenshots
 
@@ -277,7 +285,7 @@ Current automated coverage includes:
 
 At the moment, the test suite passes with:
 
-- `23 passed`
+- `36 passed`
 
 ## How To Run
 
@@ -305,6 +313,12 @@ uvicorn main:app --reload
 pytest tests -q
 ```
 
+If pytest hits temp-directory permission issues on Windows, run:
+
+```powershell
+pytest tests -q --basetemp .pytest_tmp
+```
+
 ## Recommended Demo Questions
 
 ### Normal Q&A
@@ -321,10 +335,24 @@ pytest tests -q
 ## Resume-Friendly Highlights
 
 - Built an intelligent customer-support project based on `LangChain Agent + hybrid RAG + FastAPI`, supporting knowledge Q&A, structured monthly reports, and API-based service access.
-- Implemented lightweight hybrid retrieval with `Chroma + BM25 + RRF`, and added a fixed-query evaluation set with manual review checkpoints to make retrieval tuning more verifiable.
-- Added a lightweight `FastAPI` backend layer with request/response schemas, unified error handling, API examples, and basic automated tests.
+- Added a lightweight `FastAPI` backend layer with request/response schemas, unified error handling, API examples, and automated failure-path tests.
+- Added a fixed-query retrieval evaluation set with manual review checkpoints to make retrieval tuning more verifiable.
 - Added `BM25-only fallback` so the system can still return structured retrieval results when vector embedding service is unavailable.
 - Kept `Streamlit` as the demo entry while exposing backend capabilities through API routes for a more complete AI backend showcase.
+
+## Troubleshooting
+
+### Pytest temp-directory issue on Windows
+
+If `pytest` hits a temp-directory permission error on Windows, run:
+
+```powershell
+pytest tests -q --basetemp .pytest_tmp
+```
+
+### Chinese response text looks garbled in Windows PowerShell 5.1
+
+If API responses look garbled in Windows PowerShell 5.1, verify the service is returning `application/json; charset=utf-8`, or use Swagger / Python / Postman for response validation instead of relying on legacy console decoding.
 
 ## Interview Framing
 
@@ -351,7 +379,7 @@ Already completed:
 
 ## Next Steps
 
-- continue improving README/API usage examples and Swagger polish
-- prepare a stronger interview / resume explanation pass
-- finalize demo-facing materials for showcase and delivery
+- improve retrieval evaluation coverage
+- add stronger reranking / classification experiments when needed
+- improve deployment and environment documentation
 - reopen retrieval optimization only if stronger reranking/classification capability or a stable vector environment becomes available
